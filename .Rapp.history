@@ -1,0 +1,14 @@
+library(glm)
+packages.install('glm')
+install.packages('glm')
+yes
+install.packages('glm')
+update
+library(lgm)
+library(glm)
+library('glm')
+install.packages('glm')
+install.packages('MASS')
+library(glm)
+library(MASS)
+glm

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.counties {
+  fill: 'blue';
+}
+
+.states {
+  fill: none;
+  stroke: #fff;
+  stroke-linejoin: round;
+}
+
+.q0-9 { fill:rgb(247,251,255); }
+.q1-9 { fill:rgb(222,235,247); }
+.q2-9 { fill:rgb(198,219,239); }
+.q3-9 { fill:rgb(158,202,225); }
+.q4-9 { fill:rgb(107,174,214); }
+.q5-9 { fill:rgb(66,146,198); }
+.q6-9 { fill:rgb(33,113,181); }
+.q7-9 { fill:rgb(8,81,156); }
+.q8-9 { fill:rgb(8,48,107); }
+
+</style>
+<body>
+<div id="react"></div>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/queue.v1.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script src="https://fb.me/react-with-addons-0.13.2.js"></script>
+<script src="https://fb.me/JSXTransformer-0.13.2.js"></script>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js"></script>
+
+<script type='text/jsx'>
+
+Map = React.createClass({
+  getDefaultProps: function() {
+    return {
+      width: 960,
+      height: 960
+    };
+  },
+
+  getInitialState: function() {
+    return {
+      counties: [],
+      states: {},
+      terminals: [],
+    };
+  },
+
+  componentWillMount: function() {
+    var cmp = this;
+
+    queue()
+      .defer(d3.json, "/seattletopo.json")
+      .defer(d3.csv, "/2015_station_data.csv")
+      .await(function(error, hoods, terminals) {
+        cmp.setState({
+          counties: topojson.feature(hoods,hoods.objects.Seattle).features
+        });
+        cmp.setState({
+          terminals: terminals
+        });
+      });
+  },
+
+  render: function() {
+    var cmp = this;
+
+    var svg = React.DOM.svg;
+    var g = React.DOM.g;
+    var path = React.DOM.path;
+
+ var projection = d3.geo.albers()
+    .scale( 400000 )
+    .rotate( [122.335167,0] )
+    .center( [0, 47.608013] )
+    .translate( [500/2,960/2] );
+
+    var counties = this.state.counties
+    var terminals = this.state.terminals
+
+    var pathGenerator = d3.geo.path().projection(projection);
+
+    return (<svg 
+              width={this.props.width} 
+              height= {this.props.height}>
+                {counties.map(function(county) {
+               return <g>
+                        <path d = {pathGenerator(county)}>
+                         </path>
+                       </g>
+                 })}
+                {terminals.map(function(terminal) {
+                  console.log(terminal)
+               return <circle
+                        cx = {projection([+terminal.long,+terminal.lat])[0]}
+                        cy = {projection([+terminal.long,+terminal.lat])[1]}
+                        r =  {+terminal.dockcount/2}
+                        fill = {'green'}
+                        opacity = {0.6}
+                        className = {terminal.terminal}>
+                       </circle>
+                 })}
+
+
+  </svg>);
+}
+
+});
+
+React.render(<Map/>, document.getElementById("react"));
+
+</script>

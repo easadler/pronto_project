@@ -1,0 +1,12 @@
+1. Think about putting import statements all in top cell i.e.
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_diabetes
+from sklearn.preprocessing import scale
+from sklearn.cross_validation import KFold
+from sklearn.metrics import mean_squared_error
+from sklearn.linear_model import Ridge, Lasso, RidgeCV, LassoCV, LinearRegression
+
+Then you can stack multiple methods in one line and easily see what packages are loaded in your notebook 
+2. 
